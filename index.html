@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Updated viewport to lock zooming and feel like a native app -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
     <!-- Text Message Preview Tags (Open Graph) -->
     <meta property="og:title" content="Yousuf & Nafeesa's Walima - Find Your Seat">
@@ -30,7 +31,7 @@
         body.dark-mode {
             --bg-color: #1A1A1D; /* Deep Charcoal Background */
             --text-color: #FDFBF7; /* Cream Text */
-            --accent-color: #B22222; /* Slightly Brighter Crimson for Contrast */
+            --accent-color: #B22222; /* Slightly Brighter Crimson */
             --card-bg: #262629; /* Dark Gray Cards */
             --search-bg: #2A2A2D;
             --search-border: #444;
@@ -38,6 +39,12 @@
             --table-label-color: #999;
         }
         
+        /* App-Like Body Locking */
+        html, body {
+            overscroll-behavior-y: none; /* Stops the webpage 'bounce' effect */
+            -webkit-tap-highlight-color: transparent; /* Removes blue tap boxes */
+        }
+
         body {
             font-family: 'Georgia', serif;
             background-color: var(--bg-color);
@@ -50,6 +57,53 @@
             min-height: 100vh;
             overflow-x: hidden;
             transition: background-color 0.5s ease, color 0.5s ease;
+        }
+
+        /* Prevent scrolling while splash screen is active */
+        body.splash-active {
+            overflow: hidden; 
+        }
+
+        /* Bespoke Gold Scrollbar */
+        ::-webkit-scrollbar {
+            width: 5px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--gold-accent); 
+            border-radius: 10px;
+        }
+
+        /* Cinematic Splash Screen */
+        #splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: var(--bg-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.8s ease-in-out, visibility 0.8s;
+        }
+
+        #splash-screen h1 {
+            color: var(--gold-accent);
+            font-size: 3.5rem;
+            font-style: italic;
+            font-family: 'Georgia', serif;
+            animation: pulse 1.5s infinite;
+            letter-spacing: 2px;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.7; transform: scale(0.95); }
+            50% { opacity: 1; transform: scale(1.05); }
+            100% { opacity: 0.7; transform: scale(0.95); }
         }
 
         /* Floating Theme Toggle Button */
@@ -81,15 +135,6 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.5);
         }
 
-        @keyframes pageLoad {
-            0% { opacity: 0; }
-            100% { opacity: 1; }
-        }
-
-        body {
-            animation: pageLoad 1.2s ease-in-out;
-        }
-
         .header-image {
             width: 100%;
             max-width: 800px;
@@ -113,15 +158,6 @@
             margin-bottom: 25px;
             letter-spacing: 1.5px;
             text-transform: uppercase;
-        }
-
-        h1 {
-            font-size: 2.3rem;
-            margin-bottom: 5px;
-            color: var(--text-color);
-            font-weight: normal;
-            letter-spacing: 1px;
-            transition: color 0.5s ease;
         }
 
         h2 {
@@ -207,16 +243,6 @@
             transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.5s ease, border-color 0.5s ease;
         }
 
-        .guest-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(158, 27, 34, 0.1);
-            border-left-color: var(--gold-accent);
-        }
-
-        body.dark-mode .guest-card:hover {
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
-        }
-
         .guest-name {
             font-size: 1.4rem;
             font-weight: bold;
@@ -270,7 +296,12 @@
         }
     </style>
 </head>
-<body>
+<body class="splash-active">
+
+    <!-- Cinematic Splash Screen -->
+    <div id="splash-screen">
+        <h1>Y & N</h1>
+    </div>
 
     <!-- Put your wide 'banner.jpg' image in the same GitHub repository folder -->
     <img src="banner.jpg" alt="Walima Banner" class="header-image" onerror="this.style.display='none'">
@@ -278,7 +309,7 @@
     <div class="container">
         <div class="bismillah">In the name of Allah, The Most Beneficent, The Most Merciful</div>
         
-        <h1>Yousuf & Nafeesa's</h1>
+        <h1 style="font-size: 2.3rem; margin-bottom: 5px; font-weight: normal; letter-spacing: 1px;">Yousuf & Nafeesa's</h1>
         <h2>Walima</h2>
         
         <p class="instructions">Your seat awaits. Enter your name to begin.</p>
@@ -297,11 +328,29 @@
     <button id="darkModeToggle" class="theme-toggle" aria-label="Toggle Evening Mode">🌙</button>
 
     <script>
+        // Splash Screen Logic
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                const splash = document.getElementById('splash-screen');
+                splash.style.opacity = '0';
+                splash.style.visibility = 'hidden';
+                document.body.classList.remove('splash-active');
+            }, 1200); // 1.2 seconds before fading out
+        });
+
+        // Haptic Feedback Logic
+        function triggerHaptic() {
+            if (navigator.vibrate) {
+                navigator.vibrate(40); // Gentle 40ms vibration
+            }
+        }
+
         // Exact 145-person guest list
         const guests = [{"Table": 1, "Name": "Azad"}, {"Table": 1, "Name": "Azweem"}, {"Table": 1, "Name": "Fazeela"}, {"Table": 1, "Name": "Fazie"}, {"Table": 1, "Name": "Grandma"}, {"Table": 1, "Name": "Grandpa"}, {"Table": 1, "Name": "Grandpa Hakeek"}, {"Table": 1, "Name": "Shelly"}, {"Table": 2, "Name": "Alec"}, {"Table": 2, "Name": "Alisha"}, {"Table": 2, "Name": "Eric"}, {"Table": 2, "Name": "Natasha"}, {"Table": 2, "Name": "Riyad"}, {"Table": 2, "Name": "Sahil"}, {"Table": 2, "Name": "Sayid"}, {"Table": 2, "Name": "Shiraz"}, {"Table": 3, "Name": "Ahmed"}, {"Table": 3, "Name": "Bilal"}, {"Table": 3, "Name": "Brianna"}, {"Table": 3, "Name": "Maurice"}, {"Table": 3, "Name": "Nabeela"}, {"Table": 3, "Name": "Shaneeza"}, {"Table": 3, "Name": "Shonique"}, {"Table": 3, "Name": "Simone"}, {"Table": 4, "Name": "Aneisa tentative"}, {"Table": 4, "Name": "Arif"}, {"Table": 4, "Name": "Ayube"}, {"Table": 4, "Name": "Feroz"}, {"Table": 4, "Name": "Golin"}, {"Table": 4, "Name": "Lisa"}, {"Table": 4, "Name": "Ramzan"}, {"Table": 4, "Name": "Sharmila"}, {"Table": 4, "Name": "Zalo"}, {"Table": 5, "Name": "Alishba"}, {"Table": 5, "Name": "Ayaz"}, {"Table": 5, "Name": "Ayaz wife"}, {"Table": 5, "Name": "Fuzail"}, {"Table": 5, "Name": "Irana"}, {"Table": 5, "Name": "Ishaan"}, {"Table": 5, "Name": "Ismail"}, {"Table": 5, "Name": "Mohammed"}, {"Table": 6, "Name": "Christy"}, {"Table": 6, "Name": "Jamila Azees"}, {"Table": 6, "Name": "Omar"}, {"Table": 6, "Name": "Raymond"}, {"Table": 6, "Name": "Shaimoon"}, {"Table": 6, "Name": "Sheriff"}, {"Table": 6, "Name": "Zarina"}, {"Table": 6, "Name": "Zayn"}, {"Table": 7, "Name": "Bibi"}, {"Table": 7, "Name": "Khadija"}, {"Table": 7, "Name": "Nazareen"}, {"Table": 7, "Name": "Nazereen huzz"}, {"Table": 7, "Name": "Raheem"}, {"Table": 7, "Name": "Rubeena"}, {"Table": 7, "Name": "Rubeena Huzz"}, {"Table": 8, "Name": "Fameeda huzz"}, {"Table": 8, "Name": "Fameeda kid"}, {"Table": 8, "Name": "Fazal Khan"}, {"Table": 8, "Name": "Zalena Khan"}, {"Table": 8, "Name": "Zur huzz"}, {"Table": 8, "Name": "Zur kid 1"}, {"Table": 8, "Name": "Zur kid 2"}, {"Table": 9, "Name": "Amar"}, {"Table": 9, "Name": "Amo"}, {"Table": 9, "Name": "Amo wife"}, {"Table": 9, "Name": "Fuzia"}, {"Table": 9, "Name": "Kalam"}, {"Table": 9, "Name": "Kameela"}, {"Table": 9, "Name": "Sharifa"}, {"Table": 10, "Name": "Carol"}, {"Table": 10, "Name": "Charles"}, {"Table": 10, "Name": "Doreen"}, {"Table": 10, "Name": "Eina"}, {"Table": 10, "Name": "Fiza"}, {"Table": 10, "Name": "Rampal"}, {"Table": 10, "Name": "Ravi"}, {"Table": 10, "Name": "Zaid"}, {"Table": 11, "Name": "Alyssa"}, {"Table": 11, "Name": "Amani"}, {"Table": 11, "Name": "Farisha"}, {"Table": 11, "Name": "Fazil"}, {"Table": 11, "Name": "Hafeez"}, {"Table": 11, "Name": "Jason"}, {"Table": 11, "Name": "Krishna"}, {"Table": 11, "Name": "Sally"}, {"Table": 12, "Name": "Aaliyah"}, {"Table": 12, "Name": "Haleema"}, {"Table": 12, "Name": "Iris"}, {"Table": 12, "Name": "Kayden"}, {"Table": 12, "Name": "Munir"}, {"Table": 12, "Name": "Rozeena"}, {"Table": 12, "Name": "Sheriff"}, {"Table": 12, "Name": "Zeena"}, {"Table": 13, "Name": "Imran"}, {"Table": 13, "Name": "Imran wife"}, {"Table": 13, "Name": "Leah"}, {"Table": 13, "Name": "Riyaz"}, {"Table": 13, "Name": "Riyaz wife"}, {"Table": 13, "Name": "Safraz"}, {"Table": 13, "Name": "Safraz kid 1"}, {"Table": 13, "Name": "Safraz kid 2"}, {"Table": 13, "Name": "Safraz kid 3"}, {"Table": 13, "Name": "Safraz kid 4"}, {"Table": 14, "Name": "Amir"}, {"Table": 14, "Name": "Andre"}, {"Table": 14, "Name": "Samirah"}, {"Table": 14, "Name": "Shaleinie"}, {"Table": 14, "Name": "Shalenie daughter"}, {"Table": 14, "Name": "Sharon"}, {"Table": 14, "Name": "Shazaad tentative"}, {"Table": 14, "Name": "Shazaad wife tentative"}, {"Table": 14, "Name": "Zaheera"}, {"Table": 15, "Name": "Azad (Moses)"}, {"Table": 15, "Name": "Farouq"}, {"Table": 15, "Name": "Farouq wife"}, {"Table": 15, "Name": "Rubeena"}, {"Table": 15, "Name": "Sabrina"}, {"Table": 15, "Name": "Sally Subadar"}, {"Table": 15, "Name": "Shafiq"}, {"Table": 15, "Name": "Shenny"}, {"Table": 15, "Name": "Shenny huzz"}, {"Table": 16, "Name": "Brad"}, {"Table": 16, "Name": "Bucky"}, {"Table": 16, "Name": "Curly"}, {"Table": 16, "Name": "James"}, {"Table": 16, "Name": "Meena"}, {"Table": 16, "Name": "Walis"}, {"Table": 16, "Name": "Zalina"}, {"Table": 17, "Name": "Abhi"}, {"Table": 17, "Name": "Fareeda tentative"}, {"Table": 17, "Name": "Inshaan"}, {"Table": 17, "Name": "Marsha"}, {"Table": 17, "Name": "Nazeema"}, {"Table": 17, "Name": "Rozie"}, {"Table": 18, "Name": "Adrian"}, {"Table": 18, "Name": "Carise"}, {"Table": 18, "Name": "Gabriele"}, {"Table": 18, "Name": "Isaac"}, {"Table": 18, "Name": "Jebesha"}, {"Table": 18, "Name": "Lubna"}, {"Table": 18, "Name": "Mashood"}, {"Table": 18, "Name": "Reeta"}, {"Table": 18, "Name": "Ridwan"}, {"Table": 18, "Name": "Varsh"}]; 
 
         // Search Function
         function searchGuests() {
+            triggerHaptic(); // Trigger vibration on search
             const input = document.getElementById('searchInput').value.toLowerCase().trim();
             const resultsDiv = document.getElementById('results');
             
@@ -339,6 +388,7 @@
         // Dark Mode Logic
         const themeToggle = document.getElementById('darkModeToggle');
         themeToggle.addEventListener('click', () => {
+            triggerHaptic(); // Trigger vibration on theme toggle
             document.body.classList.toggle('dark-mode');
             
             // Switch icon between moon and sun
