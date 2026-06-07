@@ -47,7 +47,7 @@
             width: 90%;
             max-width: 600px;
             text-align: center;
-            padding: 30px 0 40px 0;
+            padding: 20px 0; /* Slightly reduced top padding to help fit screens */
         }
 
         /* The Bismillah Text */
@@ -73,7 +73,7 @@
             margin-top: 0;
             color: var(--accent-color);
             font-style: italic;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
             position: relative;
             display: inline-block;
         }
@@ -121,10 +121,14 @@
         }
 
         #results {
-            margin-top: 35px;
+            margin-top: 30px;
             display: flex;
             flex-direction: column;
             gap: 18px;
+        }
+
+        /* This is the fix! The invisible cushion only adds padding if there are results */
+        #results:not(:empty) {
             padding-bottom: 350px; 
         }
 
@@ -186,7 +190,7 @@
 
         .footer {
             margin-top: auto;
-            padding: 30px 20px;
+            padding: 20px;
             font-size: 0.85rem;
             color: #999;
             letter-spacing: 2px;
@@ -209,9 +213,11 @@
 </head>
 <body>
 
+    <!-- Put your wide 'banner.jpg' image in the same GitHub repository folder -->
     <img src="banner.jpg" alt="Walima Banner" class="header-image" onerror="this.style.display='none'">
 
     <div class="container">
+        <!-- New Bismillah line added here! -->
         <div class="bismillah">In the name of Allah, The Most Beneficent, The Most Merciful</div>
         
         <h1>Yousuf & Nafeesa's</h1>
@@ -226,6 +232,7 @@
 
     <div class="footer">
         JUNE 27, 2026 • ROYAL PALM BANQUET<br>
+        <!-- New Timeline note added here! -->
         <span class="footer-time">Appetizers Begin at 6:00 PM</span>
     </div>
 
