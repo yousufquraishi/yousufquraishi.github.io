@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yousuf & Nafeesa's Walima Seating</title>
+    <style>
+        :root {
+            --bg-color: #FDFBF7; /* Warm Cream */
+            --text-color: #2B2B2B; /* Charcoal */
+            --accent-color: #9E1B22; /* Deep Crimson */
+            --gold-accent: #D4AF37;
+        }
+        
+        body {
+            font-family: 'Georgia', serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .header-image {
+            width: 100%;
+            max-width: 800px;
+            height: auto;
+            border-bottom: 3px solid var(--accent-color);
+        }
+
+        .container {
+            width: 90%;
+            max-width: 600px;
+            text-align: center;
+            padding: 40px 0;
+        }
+
+        h1 {
+            font-size: 2.3rem;
+            margin-bottom: 5px;
+            color: var(--text-color);
+            font-weight: normal;
+        }
+
+        h2 {
+            font-size: 1.6rem;
+            margin-top: 0;
+            color: var(--accent-color);
+            font-style: italic;
+            margin-bottom: 30px;
+        }
+
+        p.instructions {
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+            color: #555;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.2rem;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            box-sizing: border-box;
+            outline: none;
+            transition: border-color 0.3s;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            text-align: center;
+        }
+
+        .search-box:focus {
+            border-color: var(--accent-color);
+        }
+
+        #results {
+            margin-top: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .guest-card {
+            background: white;
+            border: 1px solid #ddd;
+            border-left: 5px solid var(--accent-color);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            animation: fadeIn 0.3s ease-in;
+            text-align: left;
+        }
+
+        .guest-name {
+            font-size: 1.3rem;
+            font-weight: bold;
+        }
+
+        .table-info {
+            text-align: right;
+        }
+        
+        .table-label {
+            font-size: 0.8rem;
+            color: #777;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .table-number {
+            font-size: 2rem;
+            color: var(--accent-color);
+            font-weight: bold;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .footer {
+            margin-top: auto;
+            padding: 20px;
+            font-size: 0.9rem;
+            color: #888;
+            letter-spacing: 1px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Put your wide 'banner.jpg' image in the same GitHub repository folder -->
+    <img src="banner.jpg" alt="Walima Banner" class="header-image" onerror="this.style.display='none'">
+
+    <div class="container">
+        <h1>Yousuf & Nafeesa</h1>
+        <h2>Walima</h2>
+        
+        <p class="instructions">Your seat awaits. Enter your name to begin.</p>
+        
+        <input type="text" id="searchInput" class="search-box" placeholder="Tap here to search..." onkeyup="searchGuests()">
+        
+        <div id="results"></div>
+    </div>
+
+    <div class="footer">
+        JUNE 27, 2026 • ROYAL PALM BANQUET
+    </div>
+
+    <script>
+        // Your exact guest data list automatically embedded
+        const guests = [{"Name": "Sample Guest", "Table": "1"}]; 
+
+        function searchGuests() {
+            const input = document.getElementById('searchInput').value.toLowerCase().trim();
+            const resultsDiv = document.getElementById('results');
+            
+            if (input.length < 2) {
+                resultsDiv.innerHTML = '';
+                return;
+            }
+
+            const filteredGuests = guests.filter(guest => 
+                guest.Name.toLowerCase().includes(input)
+            );
+
+            if (filteredGuests.length === 0) {
+                resultsDiv.innerHTML = '<p style="color: #777; font-style: italic;">No guest found matching "' + input + '". Please check the spelling or ask a host for help.</p>';
+                return;
+            }
+
+            let html = '';
+            filteredGuests.forEach(guest => {
+                html += `
+                    <div class="guest-card">
+                        <div class="guest-name">${guest.Name}</div>
+                        <div class="table-info">
+                            <div class="table-label">Table</div>
+                            <div class="table-number">${guest.Table}</div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            resultsDiv.innerHTML = html;
+        }
+    </script>
+</body>
+</html>
