@@ -4,14 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
-    <!-- Text Message Preview Tags (Open Graph) -->
-    <meta property="og:title" content="Yousuf & Nafeesa's Walima - Find Your Seat">
-    <meta property="og:description" content="Your seat awaits. Enter your name to find your table for the evening.">
-    <meta property="og:image" content="https://yousufquraishi.github.io/banner.jpg">
-    <meta property="og:url" content="https://yousufquraishi.github.io/">
-    <meta property="og:type" content="website">
-    <meta name="twitter:card" content="summary_large_image">
-
+    <link rel="preload" href="banner-dark.jpg" as="image">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Great+Vibes&family=Lato:ital,wght@0,300;0,400;0,700;1,400&display=swap" rel="stylesheet">
+    
     <title>Yousuf & Nafeesa's Walima Seating</title>
     <style>
         :root {
@@ -19,393 +16,788 @@
             --text-color: #2B2B2B; 
             --accent-color: #9E1B22; 
             --gold-accent: #D4AF37; 
-            /* Frosted Glass Variables - Light Mode */
-            --card-bg: rgba(255, 255, 255, 0.65); 
-            --search-bg: rgba(255, 255, 255, 0.55);
-            --search-border: rgba(255, 255, 255, 0.8);
+            
+            --glass-bg: rgba(255, 255, 255, 0.55); 
+            --glass-border: rgba(255, 255, 255, 0.6);
+            --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.08);
+            --nav-bg: rgba(253, 251, 247, 0.85);
+            
+            --bevel-color: rgba(255, 255, 255, 0.95);
             --subtext-color: #555;
             --table-label-color: #888;
         }
 
-        /* Frosted Glass Variables - Dark Mode */
         body.dark-mode {
-            --bg-color: #1A1A1D; 
+            --bg-color: #0A0A0C; 
             --text-color: #FDFBF7; 
             --accent-color: #B22222; 
-            --card-bg: rgba(38, 38, 41, 0.65); 
-            --search-bg: rgba(42, 42, 45, 0.55);
-            --search-border: rgba(255, 255, 255, 0.1);
+            
+            --glass-bg: rgba(25, 25, 30, 0.55); 
+            --glass-border: rgba(255, 255, 255, 0.05);
+            --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+            --nav-bg: rgba(10, 10, 12, 0.85);
+            
+            --bevel-color: rgba(212, 175, 55, 0.45);
             --subtext-color: #AAA;
             --table-label-color: #999;
         }
         
-        html, body {
-            overscroll-behavior-y: none; 
-            -webkit-tap-highlight-color: transparent; 
-        }
+        html, body { overscroll-behavior-y: none; -webkit-tap-highlight-color: transparent; }
 
         body {
-            font-family: 'Georgia', serif;
+            font-family: 'Lato', sans-serif;
             background-color: var(--bg-color);
-            color: var(--text-color);
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-            overflow-x: hidden;
-            transition: background-color 0.5s ease, color 0.5s ease;
+            color: var(--text-color); margin: 0; padding: 0; display: flex;
+            flex-direction: column; align-items: center; min-height: 100vh;
+            overflow-x: hidden; transition: background-color 0.8s ease, color 0.8s ease;
+            padding-bottom: 90px;
         }
 
-        body.splash-active {
-            overflow: hidden; 
+        h1, h2, h3, .cinzel-text {
+            font-family: 'Cinzel', serif; 
+            font-weight: 600;
         }
 
-        ::-webkit-scrollbar {
-            width: 5px;
+        body.splash-active { overflow: hidden; }
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-thumb { background: var(--gold-accent); border-radius: 10px; }
+
+        #bg-canvas {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: 1; pointer-events: none; filter: blur(80px);
+            transform: translate3d(0, 0, 0); opacity: 0.9;
         }
-        ::-webkit-scrollbar-track {
-            background: transparent; 
+
+        .header-image, .container, .bottom-nav, .theme-toggle, .footer { position: relative; z-index: 10; }
+
+        .header-image { 
+            width: 100%; max-width: 800px; height: auto; 
+            border-bottom: 3px solid var(--accent-color); 
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); 
+            transition: filter 0.8s ease;
         }
-        ::-webkit-scrollbar-thumb {
-            background: var(--gold-accent); 
-            border-radius: 10px;
+
+        #golden-wipe {
+            position: fixed; bottom: 0; left: 0; width: 100vw; height: 0;
+            background: linear-gradient(135deg, #D4AF37, #AA8529);
+            z-index: 9000; transition: height 0.5s cubic-bezier(0.77, 0, 0.175, 1);
+            pointer-events: none;
         }
 
         #splash-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background-color: var(--bg-color);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            transition: opacity 0.8s ease-in-out, visibility 0.8s;
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background-color: var(--bg-color); display: flex; justify-content: center;
+            align-items: center; z-index: 9999; transition: opacity 0.8s ease, visibility 0.8s;
         }
-
         #splash-screen h1 {
-            color: var(--gold-accent);
-            font-size: 3.5rem;
-            font-style: italic;
-            font-family: 'Georgia', serif;
-            animation: pulse 1.5s infinite;
-            letter-spacing: 2px;
+            color: var(--gold-accent); font-size: 3.5rem; font-style: italic;
+            animation: pulse 1.5s infinite; letter-spacing: 2px;
         }
-
-        @keyframes pulse {
-            0% { opacity: 0.7; transform: scale(0.95); }
-            50% { opacity: 1; transform: scale(1.05); }
-            100% { opacity: 0.7; transform: scale(0.95); }
-        }
+        @keyframes pulse { 0%, 100% { opacity: 0.7; transform: scale(0.95); } 50% { opacity: 1; transform: scale(1.05); } }
 
         .theme-toggle {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            background-color: var(--card-bg);
-            border: 1px solid var(--search-border);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-radius: 50%;
-            width: 55px;
-            height: 55px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 1.6rem;
-            cursor: pointer;
-            z-index: 1000;
-            transition: all 0.3s ease;
+            position: fixed; bottom: 100px; right: 25px;
+            background: var(--glass-bg); border: 1px solid var(--glass-border);
+            box-shadow: inset 0 1px 1px var(--bevel-color), var(--glass-shadow);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border-radius: 50%; width: 55px; height: 55px; display: flex; justify-content: center; 
+            align-items: center; cursor: pointer; transition: all 0.3s ease;
         }
+        .theme-toggle svg { width: 26px; height: 26px; fill: var(--text-color); transition: fill 0.5s ease; }
+        .theme-toggle:hover, .theme-toggle:active { transform: translateY(-4px) scale(1.05); }
 
-        .theme-toggle:hover {
-            transform: translateY(-4px) scale(1.05);
-            box-shadow: 0 8px 20px rgba(212, 175, 55, 0.4);
-            border-color: var(--gold-accent);
-        }
+        #celebration-canvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 8999; }
 
-        body.dark-mode .theme-toggle {
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-        }
+        .container { width: 90%; max-width: 600px; text-align: center; padding: 20px 0; }
 
-        .header-image {
-            width: 100%;
-            max-width: 800px;
-            height: auto;
-            border-bottom: 3px solid var(--accent-color);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            transition: border-color 0.5s ease;
-        }
+        .tab-content { display: none; width: 100%; }
+        .tab-content.active { display: block; animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .container {
-            width: 90%;
-            max-width: 600px;
-            text-align: center;
-            padding: 20px 0;
-            position: relative;
-            z-index: 10;
-        }
+        .bismillah { font-size: 0.95rem; color: var(--gold-accent); font-style: italic; margin-bottom: 25px; letter-spacing: 1.5px; text-transform: uppercase; }
+        h2 { font-size: 1.6rem; margin-top: 0; color: var(--accent-color); font-style: italic; margin-bottom: 25px; position: relative; display: inline-block; }
+        h2::before, h2::after { content: ""; position: absolute; top: 50%; width: 40px; height: 1px; background-color: var(--gold-accent); }
+        h2::before { right: 100%; margin-right: 15px; } h2::after { left: 100%; margin-left: 15px; }
 
-        .bismillah {
-            font-size: 0.95rem;
-            color: var(--gold-accent);
-            font-style: italic;
-            margin-bottom: 25px;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-        }
-
-        h2 {
-            font-size: 1.6rem;
-            margin-top: 0;
-            color: var(--accent-color);
-            font-style: italic;
-            margin-bottom: 25px;
-            position: relative;
-            display: inline-block;
-            transition: color 0.5s ease;
-        }
-
-        h2::before, h2::after {
-            content: "";
-            position: absolute;
-            top: 50%;
-            width: 40px;
-            height: 1px;
-            background-color: var(--gold-accent);
-        }
-
-        h2::before { right: 100%; margin-right: 15px; }
-        h2::after { left: 100%; margin-left: 15px; }
-
-        p.instructions {
-            font-size: 1.1rem;
-            margin-bottom: 25px;
-            color: var(--subtext-color);
-            font-style: italic;
-            transition: color 0.5s ease;
-        }
+        .instructions { font-size: 1.1rem; margin-bottom: 25px; color: var(--subtext-color); font-style: italic; }
 
         .search-box {
-            width: 100%;
-            padding: 18px;
-            font-size: 1.2rem;
-            border: 1px solid var(--search-border);
-            border-radius: 30px;
-            box-sizing: border-box;
-            outline: none;
-            transition: all 0.4s ease;
-            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-            text-align: center;
-            background-color: var(--search-bg);
-            color: var(--text-color);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+            width: 100%; padding: 18px; font-size: 1.2rem; border: 1px solid var(--glass-border);
+            border-radius: 30px; box-sizing: border-box; outline: none; transition: all 0.4s ease;
+            text-align: center; background: var(--glass-bg); color: var(--text-color);
+            box-shadow: inset 0 1px 2px var(--bevel-color), var(--glass-shadow);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); font-family: 'Lato', sans-serif;
+        }
+        .search-box:focus { border-color: var(--gold-accent); box-shadow: inset 0 1px 2px var(--bevel-color), 0 0 20px rgba(212, 175, 55, 0.3); }
+
+        .result-item {
+            --bevel-x: 0px; --bevel-y: 1px;
+            background: var(--glass-bg); border: 1px solid var(--glass-border);
+            padding: 16px 20px; margin-top: 15px; border-radius: 16px; display: flex;
+            align-items: center; cursor: pointer; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            box-shadow: inset var(--bevel-x) var(--bevel-y) 1px var(--bevel-color), var(--glass-shadow);
+            text-align: left; transition: transform 0.1s ease-out, box-shadow 0.1s ease-out; transform-style: preserve-3d;
         }
 
-        .search-box:focus {
-            border-color: var(--gold-accent);
-            box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
-            transform: translateY(-2px);
-            background-color: var(--card-bg);
-        }
-
-        #results {
-            margin-top: 30px;
-            display: flex;
-            flex-direction: column;
-            gap: 18px;
-        }
-
-        #results:not(:empty) {
-            padding-bottom: 350px; 
-        }
-
-        .guest-card {
-            background-color: var(--card-bg);
-            border: 1px solid var(--search-border);
-            border-left: 6px solid var(--accent-color);
-            padding: 22px;
-            border-radius: 12px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.06);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            text-align: left;
-            opacity: 0;
-            transform: translateY(20px);
-            animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-            position: relative;
-            overflow: hidden;
-            transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.5s ease, border-color 0.5s ease;
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-        }
-
-        .guest-name {
-            font-size: 1.4rem;
-            font-weight: bold;
-            color: var(--text-color);
-        }
-
-        .table-info {
-            text-align: right;
+        .avatar {
+            width: 40px; height: 40px; border-radius: 50%; background: var(--gold-accent); color: #fff;
+            display: flex; justify-content: center; align-items: center; font-size: 1.1rem; font-weight: bold;
+            margin-right: 15px; font-family: 'Cinzel', serif; box-shadow: 0 4px 10px rgba(212, 175, 55, 0.3);
+            flex-shrink: 0;
         }
         
-        .table-label {
-            font-size: 0.8rem;
-            color: var(--table-label-color);
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 2px;
-            transition: color 0.5s ease;
+        .guest-details-col { flex-grow: 1; display: flex; flex-direction: column; }
+        .guest-name { font-weight: 700; font-size: 1.1rem; }
+        .badge-tentative {
+            display: inline-block; background: rgba(158, 27, 34, 0.1); color: var(--accent-color);
+            font-size: 0.7rem; padding: 2px 8px; border-radius: 10px; margin-top: 4px;
+            text-transform: uppercase; letter-spacing: 1px; border: 1px solid rgba(158, 27, 34, 0.3);
+            width: fit-content;
+        }
+        .select-arrow { color: var(--gold-accent); font-size: 0.9rem; font-style: italic; white-space: nowrap; margin-left: 10px;}
+
+        /* PERSONALIZED SCREEN TAKEOVER */
+        #takeover-view {
+            display: none; background: var(--glass-bg); border: 1px solid var(--glass-border);
+            padding: 40px 20px; border-radius: 24px; box-shadow: inset 0 1px 2px var(--bevel-color), var(--glass-shadow);
+            backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px); margin-top: 20px;
+        }
+        
+        .takeover-welcome { font-size: 1.2rem; margin-bottom: 5px; color: var(--subtext-color); font-style: italic; }
+        
+        .takeover-highlight { 
+            display: block; font-family: 'Great Vibes', cursive; font-size: 4rem; 
+            color: var(--accent-color); margin: 5px 0 20px 0; line-height: 1; text-shadow: 2px 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .takeover-card {
+            border: 1px solid var(--gold-accent); border-radius: 20px; padding: 30px; margin: 25px 0; 
+            background: linear-gradient(145deg, rgba(212, 175, 55, 0.15), transparent);
+            box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.4); position: relative;
+        }
+        .takeover-label { text-transform: uppercase; letter-spacing: 3px; font-size: 0.85rem; color: var(--table-label-color); font-family: 'Cinzel', serif; font-weight: 600;}
+        .takeover-number { font-size: 6rem; font-weight: bold; color: var(--gold-accent); margin: 0; line-height: 1; font-family: 'Cinzel', serif;}
+        
+        .table-diagram { margin: 20px auto; width: 100px; height: 100px; }
+        
+        .tablemates-btn {
+            background: none; border: none; color: var(--subtext-color); font-size: 0.9rem;
+            text-transform: uppercase; letter-spacing: 1px; cursor: pointer; margin-top: 20px;
+            display: flex; align-items: center; justify-content: center; width: 100%; gap: 8px; transition: color 0.3s ease;
+            font-family: 'Lato', sans-serif; font-weight: 700;
+        }
+        .tablemates-btn:hover { color: var(--gold-accent); }
+        .tablemates-btn svg { width: 18px; height: 18px; fill: currentColor; }
+        
+        .chips-container {
+            display: none; display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;
+            margin-top: 15px; padding-top: 20px; border-top: 1px solid var(--glass-border);
+            animation: slideDownFade 0.4s ease forwards;
+        }
+        @keyframes slideDownFade { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .chip {
+            background: var(--bg-color); border: 1px solid var(--glass-border); padding: 5px 12px 5px 5px;
+            border-radius: 20px; display: flex; align-items: center; gap: 8px; font-size: 0.9rem;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05); font-weight: 600;
+        }
+        .chip-avatar {
+            width: 24px; height: 24px; border-radius: 50%; background: var(--gold-accent); color: white;
+            display: flex; justify-content: center; align-items: center; font-size: 0.7rem; font-family: 'Cinzel', serif;
         }
 
-        .table-number {
-            font-size: 2.2rem;
-            color: var(--gold-accent);
-            font-weight: bold;
-            line-height: 1;
+        .action-buttons { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; margin-top: 15px; }
+        .action-btn {
+            background: transparent; border: 1px solid var(--gold-accent); color: var(--text-color);
+            padding: 12px 25px; border-radius: 30px; font-size: 0.95rem; cursor: pointer; 
+            font-family: 'Lato', sans-serif; font-weight: 600; box-shadow: inset 0 1px 1px var(--bevel-color);
+            display: flex; align-items: center; gap: 8px; transition: all 0.3s ease;
+        }
+        .action-btn.primary { background: var(--gold-accent); color: white; }
+        .action-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(212,175,55,0.3); }
+
+        /* TIMELINE WITH LIVE SLIDING TRACKER */
+        .timeline { position: relative; max-width: 500px; margin: 30px auto; padding-left: 40px; text-align: left; }
+        .timeline::before { content: ''; position: absolute; left: 19px; top: 5px; bottom: 5px; width: 2px; background-color: var(--glass-border); }
+        .timeline-item { position: relative; margin-bottom: 35px; transition: all 0.4s ease; }
+        .timeline-node { position: absolute; left: -30px; top: 4px; width: 12px; height: 12px; border-radius: 50%; background-color: var(--glass-border); border: 4px solid var(--bg-color); transition: all 0.4s ease; z-index: 2;}
+        
+        .timeline-content { background: var(--glass-bg); border: 1px solid var(--glass-border); padding: 18px; border-radius: 16px; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); box-shadow: inset 0 1px 1px var(--bevel-color), var(--glass-shadow); transition: all 0.4s ease; }
+        .timeline-time { font-size: 0.85rem; color: var(--gold-accent); font-weight: bold; letter-spacing: 1px; font-family: 'Lato', sans-serif;}
+        .timeline-title { font-size: 1.2rem; margin: 4px 0; font-weight: 700; color: var(--text-color); font-family: 'Cinzel', serif;}
+        .timeline-desc { font-size: 0.95rem; color: var(--subtext-color); margin: 0; font-style: italic; }
+        .timeline-item.active .timeline-content { border-color: var(--gold-accent); box-shadow: inset 0 1px 1px var(--bevel-color), 0 8px 25px rgba(212, 175, 55, 0.25); transform: translateX(6px); }
+        
+        #live-time-tracker {
+            position: absolute; left: 8px; width: 16px; height: 16px; border-radius: 50%;
+            background-color: var(--gold-accent); border: 4px solid var(--bg-color);
+            box-shadow: 0 0 15px 4px var(--gold-accent); z-index: 5;
+            transition: top 1s linear; display: none;
         }
 
-        @keyframes slideUpFade {
-            to { opacity: 1; transform: translateY(0); }
+        /* DETAILS TAB & COUNTDOWN */
+        .countdown-container { display: flex; justify-content: center; gap: 15px; margin: 25px 0; }
+        .countdown-box {
+            background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 12px;
+            padding: 15px 10px; width: 65px; box-shadow: inset 0 1px 1px var(--bevel-color), var(--glass-shadow);
+            backdrop-filter: blur(10px);
         }
+        .cd-number { display: block; font-family: 'Cinzel', serif; font-size: 2rem; font-weight: 700; color: var(--gold-accent); line-height: 1; }
+        .cd-label { display: block; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: var(--subtext-color); margin-top: 5px; font-weight: 700;}
 
-        .footer {
-            margin-top: auto;
-            padding: 20px;
-            font-size: 0.85rem;
-            color: var(--subtext-color);
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            text-align: center;
-            line-height: 1.8;
-            transition: color 0.5s ease;
-            position: relative;
-            z-index: 10;
+        .details-card {
+            background: var(--glass-bg); border: 1px solid var(--glass-border); padding: 25px;
+            border-radius: 16px; margin-bottom: 20px; box-shadow: inset 0 1px 1px var(--bevel-color), var(--glass-shadow);
+            backdrop-filter: blur(20px); text-align: left;
         }
+        .details-card h3 { color: var(--accent-color); margin-top: 0; margin-bottom: 15px; display: flex; align-items: center; gap: 10px;}
+        .details-card p { color: var(--subtext-color); line-height: 1.6; margin: 0 0 10px 0; }
+        
+        .etiquette-list { color: var(--subtext-color); line-height: 1.6; padding-left: 20px; margin: 0; }
+        .etiquette-list li { margin-bottom: 12px; }
+        .etiquette-list strong { color: var(--text-color); font-weight: 700; }
 
-        .footer-time {
-            color: var(--gold-accent);
-            font-style: italic;
-            text-transform: none;
-            font-size: 1rem;
-            letter-spacing: 1px;
-            display: block;
-            margin-top: 5px;
+        .bottom-nav {
+            position: fixed; bottom: 0; left: 0; width: 100%; height: 80px;
+            background: var(--nav-bg); border-top: 1px solid var(--glass-border);
+            box-shadow: inset 0 1px 1px var(--bevel-color);
+            backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+            display: flex; justify-content: space-around; align-items: center; z-index: 5000;
         }
+        .nav-item {
+            background: none; border: none; color: var(--table-label-color);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            font-family: 'Lato', sans-serif; font-size: 0.75rem; font-weight: 700;
+            cursor: pointer; width: 100%; height: 100%; gap: 6px; text-transform: uppercase; letter-spacing: 1px;
+        }
+        .nav-item svg { width: 24px; height: 24px; fill: currentColor; transition: transform 0.2s ease; }
+        .nav-item.active { color: var(--accent-color); }
+        .nav-item.active svg { transform: translateY(-4px) scale(1.15); fill: var(--accent-color); }
+
+        .footer { padding: 20px; font-size: 0.85rem; color: var(--subtext-color); letter-spacing: 2px; text-transform: uppercase; text-align: center; position: relative; z-index: 10; font-family: 'Cinzel', serif; font-weight: 600;}
+        .footer-time { color: var(--gold-accent); font-family: 'Lato', sans-serif; text-transform: none; font-size: 0.9rem; margin-top: 5px; display: block; font-weight: 400; font-style: italic;}
     </style>
 </head>
-<body class="splash-active">
+<body class="splash-active dark-mode">
 
-    <div id="splash-screen">
-        <h1>Y & N</h1>
-    </div>
+    <canvas id="bg-canvas"></canvas>
 
-    <img src="banner.jpg" alt="Walima Banner" class="header-image" onerror="this.style.display='none'">
+    <div id="golden-wipe"></div>
+    <div id="splash-screen"><h1>Y & N</h1></div>
+    <canvas id="celebration-canvas"></canvas>
+
+    <img id="dynamic-banner" src="banner-dark.jpg" alt="Walima Banner" class="header-image" onerror="this.src='banner.jpg'">
 
     <div class="container">
         <div class="bismillah">In the name of Allah, The Most Beneficent, The Most Merciful</div>
+        <h1 style="font-size: 2.3rem; margin-bottom: 5px; text-align: center;">Yousuf & Nafeesa's</h1>
         
-        <h1 style="font-size: 2.3rem; margin-bottom: 5px; font-weight: normal; letter-spacing: 1px;">Yousuf & Nafeesa's</h1>
-        <h2>Walima</h2>
-        
-        <p class="instructions">Your seat awaits. Enter your name to begin.</p>
-        
-        <input type="text" id="searchInput" class="search-box" placeholder="Tap here to search..." onkeyup="searchGuests()">
-        
-        <div id="results"></div>
+        <div id="seating-tab" class="tab-content active">
+            <h2>Walima Seating</h2>
+            <div id="search-interface">
+                <p class="instructions">Your seat awaits. Enter your name to begin.</p>
+                <input type="text" id="searchInput" class="search-box" placeholder="Tap here to search..." onkeyup="searchGuests()">
+                <div id="results"></div>
+            </div>
+
+            <div id="takeover-view">
+                <div class="takeover-welcome">Welcome to our celebration,</div>
+                <div id="takeover-guest-name" class="takeover-highlight">Guest</div>
+                
+                <div id="takeover-badge-container" style="display:none; margin-bottom:15px;">
+                    <span class="badge-tentative">Tentative RSVP</span>
+                </div>
+
+                <div class="takeover-card">
+                    <div class="table-diagram">
+                        <svg viewBox="0 0 100 100" width="100%" height="100%">
+                            <circle cx="50" cy="50" r="30" fill="transparent" stroke="var(--gold-accent)" stroke-width="2" opacity="0.5"/>
+                            <circle cx="50" cy="50" r="25" fill="var(--glass-bg)" stroke="var(--glass-border)"/>
+                            <circle cx="50" cy="12" r="8" fill="var(--gold-accent)" filter="drop-shadow(0 0 6px var(--gold-accent))"/>
+                            <circle cx="77" cy="23" r="7" fill="var(--glass-bg)" stroke="var(--glass-border)"/>
+                            <circle cx="88" cy="50" r="7" fill="var(--glass-bg)" stroke="var(--glass-border)"/>
+                            <circle cx="77" cy="77" r="7" fill="var(--glass-bg)" stroke="var(--glass-border)"/>
+                            <circle cx="50" cy="88" r="7" fill="var(--glass-bg)" stroke="var(--glass-border)"/>
+                            <circle cx="23" cy="77" r="7" fill="var(--glass-bg)" stroke="var(--glass-border)"/>
+                            <circle cx="12" cy="50" r="7" fill="var(--glass-bg)" stroke="var(--glass-border)"/>
+                            <circle cx="23" cy="23" r="7" fill="var(--glass-bg)" stroke="var(--glass-border)"/>
+                        </svg>
+                    </div>
+
+                    <div class="takeover-label">Your Assigned Table</div>
+                    <div id="takeover-table-number" class="takeover-number">1</div>
+                    
+                    <button class="tablemates-btn" onclick="toggleTablemates()">
+                        <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+                        See Tablemates
+                    </button>
+                    <div id="tablemates-list" class="chips-container" style="display: none;"></div>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="action-btn primary" onclick="shareTable()">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg>
+                        Share My Table
+                    </button>
+                    <button class="action-btn" onclick="resetSearch()">Back to Search</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="schedule-tab" class="tab-content">
+            <h2>Evening Itinerary</h2>
+            <div class="timeline">
+                <div class="timeline-item" data-time="18:00" data-end="19:00"><div class="timeline-node"></div><div class="timeline-content"><div class="timeline-time">6:00 PM</div><div class="timeline-title">Appetizers & Mingling</div><p class="timeline-desc">Welcome drinks, fresh hors d'oeuvres, and find your designated seating arrangement.</p></div></div>
+                <div class="timeline-item" data-time="19:00" data-end="19:30"><div class="timeline-node"></div><div class="timeline-content"><div class="timeline-time">7:00 PM</div><div class="timeline-title">Grand Couple Entrance</div><p class="timeline-desc">Welcoming the newlyweds, Yousuf & Nafeesa, to the reception hall.</p></div></div>
+                <div class="timeline-item" data-time="19:30" data-end="20:00"><div class="timeline-node"></div><div class="timeline-content"><div class="timeline-time">7:30 PM</div><div class="timeline-title">Speeches & Blessings</div><p class="timeline-desc">A few words from honored family and close friends.</p></div></div>
+                <div class="timeline-item" data-time="20:00" data-end="21:30"><div class="timeline-node"></div><div class="timeline-content"><div class="timeline-time">8:00 PM</div><div class="timeline-title">Formal Dinner Service</div><p class="timeline-desc">A gourmet multi-course dinner is served directly to your tables.</p></div></div>
+                <div class="timeline-item" data-time="21:30" data-end="23:59"><div class="timeline-node"></div><div class="timeline-content"><div class="timeline-time">9:30 PM</div><div class="timeline-title">Cake Cutting & Dancing</div><p class="timeline-desc">Sweet celebration dessert, coffee service, and celebration dance floor open.</p></div></div>
+            </div>
+        </div>
+
+        <div id="details-tab" class="tab-content">
+            <h2>Event Details</h2>
+            
+            <div class="countdown-container">
+                <div class="countdown-box"><span class="cd-number" id="cd-days">00</span><span class="cd-label">Days</span></div>
+                <div class="countdown-box"><span class="cd-number" id="cd-hours">00</span><span class="cd-label">Hours</span></div>
+                <div class="countdown-box"><span class="cd-number" id="cd-mins">00</span><span class="cd-label">Mins</span></div>
+            </div>
+
+            <div class="details-card">
+                <h3>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M9 2L7.17 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2h-3.17L15 2H9zm3 15c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z"/></svg>
+                    House Rules & Etiquette
+                </h3>
+                <ul class="etiquette-list">
+                    <li><strong>Unplugged Moments:</strong> Please turn off all camera flashes to maintain the hall's ambiance.</li>
+                    <li><strong>Media Team:</strong> We have hired amazing photographers and videographers. Please remain mindful and avoid stepping in front of their lenses or blocking their shots.</li>
+                    <li><strong>Speeches:</strong> Kindly silence all mobile devices during speeches and formal program segments.</li>
+                    <li><strong>Supervision:</strong> For their safety, please ensure children are seated or supervised by an adult during the dinner service and formalities.</li>
+                </ul>
+            </div>
+
+            <div class="details-card">
+                <h3>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+                    The Venue
+                </h3>
+                <p><strong>Royal Palm Banquet</strong></p>
+                <p>Doors open promptly at 6:00 PM for appetizers and drinks. We ask that guests arrive on time to enjoy the full program.</p>
+                <button class="action-btn" style="margin-top:10px; width: 100%; justify-content:center;" 
+                    onclick="window.open('https://www.google.com/maps/search/?api=1&query=959+Derry+Rd+E+unit+1+Mississauga+ON+L5T+2J8', '_blank')">
+                    Get Directions
+                </button>
+            </div>
+
+            <div class="details-card">
+                <h3>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M21.99 4c0-1.1-.89-2-1.99-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14l4 4-.01-18zM18 14H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg>
+                    Dress Code
+                </h3>
+                <p><strong>Formal / Traditional Evening Wear</strong></p>
+                <p>We are excited to celebrate with you in your finest attire. Please note the venue is fully climate-controlled.</p>
+            </div>
+        </div>
     </div>
 
     <div class="footer">
-        JUNE 27, 2026 • ROYAL PALM BANQUET<br>
-        <span class="footer-time">Appetizers Begin at 6:00 PM</span>
+        June 27, 2026<br><span class="footer-time">Royal Palm Banquet</span>
     </div>
 
-    <button id="darkModeToggle" class="theme-toggle" aria-label="Toggle Evening Mode">🌙</button>
+    <button id="darkModeToggle" class="theme-toggle" aria-label="Toggle Theme">
+        <svg id="theme-icon" viewBox="0 0 24 24"><path d="M6.76 4.84l-1.8-1.79-1.41 1.41 1.79 1.79 1.42-1.41zM4 10.5H1v2h3v-2zm9-9.95h-2V3.5h2V.55zm7.45 3.91l-1.41-1.41-1.79 1.79 1.41 1.41 1.79-1.79zm-3.21 13.7l1.79 1.8 1.41-1.41-1.8-1.79-1.4 1.4zM20 10.5v2h3v-2h-3zm-8-5c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm-1 16.95h2V19.5h-2v2.95zm-7.45-3.91l1.41 1.41 1.79-1.8-1.41-1.41-1.79 1.8z"/></svg>
+    </button>
+
+    <nav class="bottom-nav">
+        <button class="nav-item active" onclick="switchTab('seating-tab')">
+            <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+            <span>Seat</span>
+        </button>
+        <button class="nav-item" onclick="switchTab('schedule-tab')">
+            <svg viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11z"/></svg>
+            <span>Schedule</span>
+        </button>
+        <button class="nav-item" onclick="switchTab('details-tab')">
+            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+            <span>Details</span>
+        </button>
+    </nav>
 
     <script>
-        window.addEventListener('load', () => {
-            setTimeout(() => {
-                const splash = document.getElementById('splash-screen');
-                splash.style.opacity = '0';
-                splash.style.visibility = 'hidden';
-                document.body.classList.remove('splash-active');
-            }, 1200); 
-        });
+        // 🌊 SPED-UP LIQUID DRIFT ENGINE 🌊
+        const bgCanvas = document.getElementById('bg-canvas');
+        const bgCtx = bgCanvas.getContext('2d');
+        let bgWidth, bgHeight;
+        let lastWidth = window.innerWidth;
 
-        function triggerHaptic() {
-            if (navigator.vibrate) {
-                navigator.vibrate(40); 
+        const blobs = [
+            { x: 0, y: 0, vx: 0.45, vy: 0.6, r: 0, light: 'rgba(212, 175, 55, 0.45)', dark: 'rgba(40, 100, 255, 0.45)' },
+            { x: 0, y: 0, vx: -0.6, vy: 0.45, r: 0, light: 'rgba(158, 27, 34, 0.35)', dark: 'rgba(212, 175, 55, 0.25)' },
+            { x: 0, y: 0, vx: 0.3, vy: -0.75, r: 0, light: 'rgba(253, 251, 247, 0.5)', dark: 'rgba(20, 20, 40, 0.5)' }
+        ];
+
+        function initBg() {
+            if (window.innerWidth !== lastWidth || bgWidth === undefined) {
+                bgWidth = window.innerWidth; bgHeight = window.innerHeight;
+                bgCanvas.width = bgWidth; bgCanvas.height = bgHeight;
+                blobs[0].r = bgWidth * 0.6; blobs[0].x = bgWidth * 0.3; blobs[0].y = bgHeight * 0.3;
+                blobs[1].r = bgWidth * 0.5; blobs[1].x = bgWidth * 0.7; blobs[1].y = bgHeight * 0.7;
+                blobs[2].r = bgWidth * 0.4; blobs[2].x = bgWidth * 0.5; blobs[2].y = bgHeight * 0.5;
+                lastWidth = window.innerWidth;
+            } else {
+                bgHeight = window.innerHeight; bgCanvas.height = bgHeight;
             }
         }
+        window.addEventListener('resize', initBg); initBg();
 
-        const guests = [{"Table": 1, "Name": "Azad"}, {"Table": 1, "Name": "Azweem"}, {"Table": 1, "Name": "Fazeela"}, {"Table": 1, "Name": "Fazie"}, {"Table": 1, "Name": "Grandma"}, {"Table": 1, "Name": "Grandpa"}, {"Table": 1, "Name": "Grandpa Hakeek"}, {"Table": 1, "Name": "Shelly"}, {"Table": 2, "Name": "Alec"}, {"Table": 2, "Name": "Alisha"}, {"Table": 2, "Name": "Eric"}, {"Table": 2, "Name": "Natasha"}, {"Table": 2, "Name": "Riyad"}, {"Table": 2, "Name": "Sahil"}, {"Table": 2, "Name": "Sayid"}, {"Table": 2, "Name": "Shiraz"}, {"Table": 3, "Name": "Ahmed"}, {"Table": 3, "Name": "Bilal"}, {"Table": 3, "Name": "Brianna"}, {"Table": 3, "Name": "Maurice"}, {"Table": 3, "Name": "Nabeela"}, {"Table": 3, "Name": "Shaneeza"}, {"Table": 3, "Name": "Shonique"}, {"Table": 3, "Name": "Simone"}, {"Table": 4, "Name": "Aneisa tentative"}, {"Table": 4, "Name": "Arif"}, {"Table": 4, "Name": "Ayube"}, {"Table": 4, "Name": "Feroz"}, {"Table": 4, "Name": "Golin"}, {"Table": 4, "Name": "Lisa"}, {"Table": 4, "Name": "Ramzan"}, {"Table": 4, "Name": "Sharmila"}, {"Table": 4, "Name": "Zalo"}, {"Table": 5, "Name": "Alishba"}, {"Table": 5, "Name": "Ayaz"}, {"Table": 5, "Name": "Ayaz wife"}, {"Table": 5, "Name": "Fuzail"}, {"Table": 5, "Name": "Irana"}, {"Table": 5, "Name": "Ishaan"}, {"Table": 5, "Name": "Ismail"}, {"Table": 5, "Name": "Mohammed"}, {"Table": 6, "Name": "Christy"}, {"Table": 6, "Name": "Jamila Azees"}, {"Table": 6, "Name": "Omar"}, {"Table": 6, "Name": "Raymond"}, {"Table": 6, "Name": "Shaimoon"}, {"Table": 6, "Name": "Sheriff"}, {"Table": 6, "Name": "Zarina"}, {"Table": 6, "Name": "Zayn"}, {"Table": 7, "Name": "Bibi"}, {"Table": 7, "Name": "Khadija"}, {"Table": 7, "Name": "Nazareen"}, {"Table": 7, "Name": "Nazereen huzz"}, {"Table": 7, "Name": "Raheem"}, {"Table": 7, "Name": "Rubeena"}, {"Table": 7, "Name": "Rubeena Huzz"}, {"Table": 8, "Name": "Fameeda huzz"}, {"Table": 8, "Name": "Fameeda kid"}, {"Table": 8, "Name": "Fazal Khan"}, {"Table": 8, "Name": "Zalena Khan"}, {"Table": 8, "Name": "Zur huzz"}, {"Table": 8, "Name": "Zur kid 1"}, {"Table": 8, "Name": "Zur kid 2"}, {"Table": 9, "Name": "Amar"}, {"Table": 9, "Name": "Amo"}, {"Table": 9, "Name": "Amo wife"}, {"Table": 9, "Name": "Fuzia"}, {"Table": 9, "Name": "Kalam"}, {"Table": 9, "Name": "Kameela"}, {"Table": 9, "Name": "Sharifa"}, {"Table": 10, "Name": "Carol"}, {"Table": 10, "Name": "Charles"}, {"Table": 10, "Name": "Doreen"}, {"Table": 10, "Name": "Eina"}, {"Table": 10, "Name": "Fiza"}, {"Table": 10, "Name": "Rampal"}, {"Table": 10, "Name": "Ravi"}, {"Table": 10, "Name": "Zaid"}, {"Table": 11, "Name": "Alyssa"}, {"Table": 11, "Name": "Amani"}, {"Table": 11, "Name": "Farisha"}, {"Table": 11, "Name": "Fazil"}, {"Table": 11, "Name": "Hafeez"}, {"Table": 11, "Name": "Jason"}, {"Table": 11, "Name": "Krishna"}, {"Table": 11, "Name": "Sally"}, {"Table": 12, "Name": "Aaliyah"}, {"Table": 12, "Name": "Haleema"}, {"Table": 12, "Name": "Iris"}, {"Table": 12, "Name": "Kayden"}, {"Table": 12, "Name": "Munir"}, {"Table": 12, "Name": "Rozeena"}, {"Table": 12, "Name": "Sheriff"}, {"Table": 12, "Name": "Zeena"}, {"Table": 13, "Name": "Imran"}, {"Table": 13, "Name": "Imran wife"}, {"Table": 13, "Name": "Leah"}, {"Table": 13, "Name": "Riyaz"}, {"Table": 13, "Name": "Riyaz wife"}, {"Table": 13, "Name": "Safraz"}, {"Table": 13, "Name": "Safraz kid 1"}, {"Table": 13, "Name": "Safraz kid 2"}, {"Table": 13, "Name": "Safraz kid 3"}, {"Table": 13, "Name": "Safraz kid 4"}, {"Table": 14, "Name": "Amir"}, {"Table": 14, "Name": "Andre"}, {"Table": 14, "Name": "Samirah"}, {"Table": 14, "Name": "Shaleinie"}, {"Table": 14, "Name": "Shalenie daughter"}, {"Table": 14, "Name": "Sharon"}, {"Table": 14, "Name": "Shazaad tentative"}, {"Table": 14, "Name": "Shazaad wife tentative"}, {"Table": 14, "Name": "Zaheera"}, {"Table": 15, "Name": "Azad (Moses)"}, {"Table": 15, "Name": "Farouq"}, {"Table": 15, "Name": "Farouq wife"}, {"Table": 15, "Name": "Rubeena"}, {"Table": 15, "Name": "Sabrina"}, {"Table": 15, "Name": "Sally Subadar"}, {"Table": 15, "Name": "Shafiq"}, {"Table": 15, "Name": "Shenny"}, {"Table": 15, "Name": "Shenny huzz"}, {"Table": 16, "Name": "Brad"}, {"Table": 16, "Name": "Bucky"}, {"Table": 16, "Name": "Curly"}, {"Table": 16, "Name": "James"}, {"Table": 16, "Name": "Meena"}, {"Table": 16, "Name": "Walis"}, {"Table": 16, "Name": "Zalina"}, {"Table": 17, "Name": "Abhi"}, {"Table": 17, "Name": "Fareeda tentative"}, {"Table": 17, "Name": "Inshaan"}, {"Table": 17, "Name": "Marsha"}, {"Table": 17, "Name": "Nazeema"}, {"Table": 17, "Name": "Rozie"}, {"Table": 18, "Name": "Adrian"}, {"Table": 18, "Name": "Carise"}, {"Table": 18, "Name": "Gabriele"}, {"Table": 18, "Name": "Isaac"}, {"Table": 18, "Name": "Jebesha"}, {"Table": 18, "Name": "Lubna"}, {"Table": 18, "Name": "Mashood"}, {"Table": 18, "Name": "Reeta"}, {"Table": 18, "Name": "Ridwan"}, {"Table": 18, "Name": "Varsh"}]; 
+        function drawBg() {
+            bgCtx.clearRect(0, 0, bgWidth, bgHeight);
+            const isDark = document.body.classList.contains('dark-mode');
+            blobs.forEach(b => {
+                b.x += b.vx; b.y += b.vy;
+                if (b.x < 0) b.vx = Math.abs(b.vx); 
+                if (b.x > bgWidth) b.vx = -Math.abs(b.vx);
+                if (b.y < 0) b.vy = Math.abs(b.vy); 
+                if (b.y > bgHeight) b.vy = -Math.abs(b.vy);
+                bgCtx.beginPath(); bgCtx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+                bgCtx.fillStyle = isDark ? b.dark : b.light; bgCtx.fill();
+            });
+            requestAnimationFrame(drawBg);
+        }
+        drawBg();
 
-        function searchGuests() {
-            triggerHaptic(); 
-            const input = document.getElementById('searchInput').value.toLowerCase().trim();
-            const resultsDiv = document.getElementById('results');
+        const guests = [{"Table": 1, "Name": "Azad"}, {"Table": 1, "Name": "Azweem"}, {"Table": 1, "Name": "Fazeela"}, {"Table": 1, "Name": "Fazie"}, {"Table": 1, "Name": "Grandma"}, {"Table": 1, "Name": "Grandpa"}, {"Table": 1, "Name": "Grandpa Hakeek"}, {"Table": 1, "Name": "Shelly"}, {"Table": 2, "Name": "Alec"}, {"Table": 2, "Name": "Alisha"}, {"Table": 2, "Name": "Eric"}, {"Table": 2, "Name": "Natasha"}, {"Table": 2, "Name": "Riyad"}, {"Table": 2, "Name": "Sahil"}, {"Table": 2, "Name": "Sayid"}, {"Table": 2, "Name": "Shiraz"}, {"Table": 3, "Name": "Ahmed"}, {"Table": 3, "Name": "Bilal"}, {"Table": 3, "Name": "Brianna"}, {"Table": 3, "Name": "Maurice"}, {"Table": 3, "Name": "Nabeela"}, {"Table": 3, "Name": "Shaneeza"}, {"Table": 3, "Name": "Shonique"}, {"Table": 3, "Name": "Simone"}, {"Table": 4, "Name": "Aneisa tentative"}, {"Table": 4, "Name": "Arif"}, {"Table": 4, "Name": "Ayube"}, {"Table": 4, "Name": "Feroz"}, {"Table": 4, "Name": "Golin"}, {"Table": 4, "Name": "Lisa"}, {"Table": 4, "Name": "Ramzan"}, {"Table": 4, "Name": "Sharmila"}, {"Table": 4, "Name": "Zalo"}, {"Table": 5, "Name": "Alishba"}, {"Table": 5, "Name": "Ayaz"}, {"Table": 5, "Name": "Ayaz wife"}, {"Table": 5, "Name": "Fuzail"}, {"Table": 5, "Name": "Irana"}, {"Table": 5, "Name": "Ishaan"}, {"Table": 5, "Name": "Ismail"}, {"Table": 5, "Name": "Mohammed"}, {"Table": 6, "Name": "Christy"}, {"Table": 6, "Name": "Jamila Azees"}, {"Table": 6, "Name": "Omar"}, {"Table": 6, "Name": "Raymond"}, {"Table": 6, "Name": "Shaimoon"}, {"Table": 6, "Name": "Sheriff"}, {"Table": 6, "Name": "Zarina"}, {"Table": 6, "Name": "Zayn"}, {"Table": 7, "Name": "Bibi"}, {"Table": 7, "Name": "Khadija"}, {"Table": 7, "Name": "Nazareen"}, {"Table": 7, "Name": "Nazereen huzz"}, {"Table": 7, "Name": "Raheem"}, {"Table": 7, "Name": "Rubeena"}, {"Table": 7, "Name": "Rubeena Huzz"}, {"Table": 8, "Name": "Fameeda huzz"}, {"Table": 8, "Name": "Fameeda kid"}, {"Table": 8, "Name": "Fazal Khan"}, {"Table": 8, "Name": "Zalena Khan"}, {"Table": 8, "Name": "Zur huzz"}, {"Table": 8, "Name": "Zur kid 1"}, {"Table": 8, "Name": "Zur kid 2"}, {"Table": 9, "Name": "Amar"}, {"Table": 9, "Name": "Amo"}, {"Table": 9, "Name": "Amo wife"}, {"Table": 9, "Name": "Fuzia"}, {"Table": 9, "Name": "Kalam"}, {"Table": 9, "Name": "Kameela"}, {"Table": 9, "Name": "Sharifa"}, {"Table": 10, "Name": "Carol"}, {"Table": 10, "Name": "Charles"}, {"Table": 10, "Name": "Doreen"}, {"Table": 10, "Name": "Eina"}, {"Table": 10, "Name": "Fiza"}, {"Table": 10, "Name": "Rampal"}, {"Table": 10, "Name": "Ravi"}, {"Table": 10, "Name": "Zaid"}, {"Table": 11, "Name": "Alyssa"}, {"Table": 11, "Name": "Amani"}, {"Table": 11, "Name": "Farisha"}, {"Table": 11, "Name": "Fazil"}, {"Table": 11, "Name": "Hafeez"}, {"Table": 11, "Name": "Jason"}, {"Table": 11, "Name": "Krishna"}, {"Table": 11, "Name": "Sally"}, {"Table": 12, "Name": "Aaliyah"}, {"Table": 12, "Name": "Haleema"}, {"Table": 12, "Name": "Iris"}, {"Table": 12, "Name": "Kayden"}, {"Table": 12, "Name": "Munir"}, {"Table": 12, "Name": "Rozeena"}, {"Table": 12, "Name": "Sheriff"}, {"Table": 12, "Name": "Zeena"}, {"Table": 13, "Name": "Imran"}, {"Table": 13, "Name": "Imran wife"}, {"Table": 13, "Name": "Leah"}, {"Table": 13, "Name": "Riyaz"}, {"Table": 13, "Name": "Riyaz wife"}, {"Table": 13, "Name": "Safraz"}, {"Table": 13, "Name": "Safraz kid 1"}, {"Table": 13, "Name": "Safraz kid 2"}, {"Table": 13, "Name": "Safraz kid 3"}, {"Table": 13, "Name": "Safraz kid 4"}, {"Table": 14, "Name": "Amir"}, {"Table": 14, "Name": "Andre"}, {"Table": 14, "Name": "Samirah"}, {"Table": 14, "Name": "Shaleinie"}, {"Table": 14, "Name": "Shalenie daughter"}, {"Table": 14, "Name": "Sharon"}, {"Table": 14, "Name": "Shazaad tentative"}, {"Table": 14, "Name": "Shazaad wife tentative"}, {"Table": 14, "Name": "Zaheera"}, {"Table": 15, "Name": "Azad (Moses)"}, {"Table": 15, "Name": "Farouq"}, {"Table": 15, "Name": "Farouq wife"}, {"Table": 15, "Name": "Rubeena"}, {"Table": 15, "Name": "Sabrina"}, {"Table": 15, "Name": "Sally Subadar"}, {"Table": 15, "Name": "Shafiq"}, {"Table": 15, "Name": "Shenny"}, {"Table": 15, "Name": "Shenny huzz"}, {"Table": 16, "Name": "Brad"}, {"Table": 16, "Name": "Bucky"}, {"Table": 16, "Name": "Curly"}, {"Table": 16, "Name": "James"}, {"Table": 16, "Name": "Meena"}, {"Table": 16, "Name": "Walis"}, {"Table": 16, "Name": "Zalina"}, {"Table": 17, "Name": "Abhi"}, {"Table": 17, "Name": "Fareeda tentative"}, {"Table": 17, "Name": "Inshaan"}, {"Table": 17, "Name": "Marsha"}, {"Table": 17, "Name": "Nazeema"}, {"Table": 17, "Name": "Rozie"}, {"Table": 18, "Name": "Adrian"}, {"Table": 18, "Name": "Carise"}, {"Table": 18, "Name": "Gabriele"}, {"Table": 18, "Name": "Isaac"}, {"Table": 18, "Name": "Jebesha"}, {"Table": 18, "Name": "Lubna"}, {"Table": 18, "Name": "Mashood"}, {"Table": 18, "Name": "Reeta"}, {"Table": 18, "Name": "Ridwan"}, {"Table": 18, "Name": "Varsh"}];
+
+        function formatGuestName(rawName) {
+            let name = rawName;
+            let isTentative = false;
             
-            if (input.length < 2) {
-                resultsDiv.innerHTML = '';
-                return;
+            if(name.toLowerCase().includes('tentative')) {
+                isTentative = true;
+                name = name.replace(/tentative/ig, '').trim();
+            }
+            
+            name = name.replace(/\s+huzz/ig, "'s Husband")
+                       .replace(/\s+wife/ig, "'s Wife")
+                       .replace(/\s+kid\s+(\d+)/ig, "'s Child $1")
+                       .replace(/\s+kid/ig, "'s Child");
+
+            let parts = name.split(' ');
+            let initials = (parts[0][0] || '') + (parts.length > 1 ? parts[1][0] : '');
+            initials = initials.toUpperCase().replace(/[^A-Z]/g, '');
+            if (!initials) initials = "?"; 
+
+            return { cleanName: name, isTentative, initials };
+        }
+
+        let currentActiveGuest = ""; let currentActiveTable = null;
+
+        function initApp() {
+            setTimeout(() => {
+                const splash = document.getElementById('splash-screen');
+                splash.style.opacity = '0'; 
+                splash.style.visibility = 'hidden';
+                document.body.classList.remove('splash-active');
+                updateTimelineHighlight(); 
+                initCountdown();
+                setInterval(updateTimelineHighlight, 1000); 
+            }, 1200); 
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initApp);
+        } else {
+            initApp();
+        }
+
+        function triggerHaptic() { if (navigator.vibrate) navigator.vibrate(40); }
+
+        function switchTab(tabId) {
+            triggerHaptic();
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            event.currentTarget.classList.add('active');
+            window.scrollTo(0, 0);
+            if (tabId === 'schedule-tab') updateTimelineHighlight();
+        }
+
+        // 📍 THE LIVE SLIDING GOLD DOT LOGIC
+        function updateTimelineHighlight() {
+            const now = new Date();
+            const currentMinutes = now.getHours() * 60 + now.getMinutes();
+            const items = document.querySelectorAll('.timeline-item');
+            
+            let tracker = document.getElementById('live-time-tracker');
+            if (!tracker) {
+                tracker = document.createElement('div');
+                tracker.id = 'live-time-tracker';
+                document.querySelector('.timeline').appendChild(tracker);
             }
 
-            const filteredGuests = guests.filter(guest => 
-                guest.Name.toLowerCase().includes(input)
-            );
+            let isEventActive = false;
 
+            items.forEach((item, index) => {
+                const startStr = item.getAttribute('data-time').split(':');
+                const endStr = item.getAttribute('data-end').split(':');
+                const startMins = parseInt(startStr[0]) * 60 + parseInt(startStr[1]);
+                const endMins = parseInt(endStr[0]) * 60 + parseInt(endStr[1]);
+
+                if (currentMinutes >= startMins && currentMinutes < endMins) {
+                    item.classList.add('active');
+                    isEventActive = true;
+
+                    if (item.offsetParent !== null) {
+                        const duration = endMins - startMins;
+                        const elapsed = currentMinutes - startMins;
+                        const percentage = Math.min(Math.max(elapsed / duration, 0), 1);
+
+                        const itemTop = item.offsetTop;
+                        const nextItem = items[index + 1];
+                        const spaceToNext = nextItem ? (nextItem.offsetTop - itemTop) : item.offsetHeight;
+
+                        const dotY = itemTop + 2 + (spaceToNext * percentage);
+                        tracker.style.top = dotY + 'px';
+                        tracker.style.display = 'block';
+                    }
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+
+            if (!isEventActive) tracker.style.display = 'none';
+        }
+
+        function searchGuests() {
+            const input = document.getElementById('searchInput').value.toLowerCase().trim();
+            const resultsDiv = document.getElementById('results');
+            if (input.length < 2) { resultsDiv.innerHTML = ''; return; }
+
+            const filteredGuests = guests.filter(g => g.Name.toLowerCase().includes(input));
             if (filteredGuests.length === 0) {
-                resultsDiv.innerHTML = '<p style="color: var(--subtext-color); font-style: italic; margin-top: 20px; animation: slideUpFade 0.5s forwards; opacity: 0;">No guest found matching "' + input + '". Please check the spelling or ask a host for help.</p>';
+                resultsDiv.innerHTML = `<p class="instructions" style="margin-top:20px;">No guest found matching "${input}".</p>`;
                 return;
             }
 
             let html = '';
-            filteredGuests.forEach((guest, index) => {
-                const delay = index * 0.08;
+            filteredGuests.forEach(guest => {
+                const data = formatGuestName(guest.Name);
+                const safeName = data.cleanName.replace(/'/g, "\\'");
+                
                 html += `
-                    <div class="guest-card" style="animation-delay: ${delay}s">
-                        <div class="guest-name">${guest.Name}</div>
-                        <div class="table-info">
-                            <div class="table-label">Table</div>
-                            <div class="table-number">${guest.Table}</div>
+                    <div class="result-item" 
+                         onmousemove="handleMouseParallax(event, this)" 
+                         onmouseleave="resetParallax(this)" 
+                         ontouchmove="handleTouchParallax(event, this)" 
+                         ontouchstart="handleTouchParallax(event, this)" 
+                         ontouchend="resetParallax(this)"
+                         onclick="initiateGoldenReveal('${safeName}', ${guest.Table}, ${data.isTentative})">
+                        <div class="avatar">${data.initials}</div>
+                        <div class="guest-details-col">
+                            <span class="guest-name">${data.cleanName}</span>
+                            ${data.isTentative ? '<span class="badge-tentative">Tentative</span>' : ''}
                         </div>
+                        <span class="select-arrow">Select →</span>
                     </div>
                 `;
             });
-
             resultsDiv.innerHTML = html;
         }
 
+        function handleMouseParallax(e, el) {
+            const rect = el.getBoundingClientRect();
+            const x = e.clientX - rect.left; const y = e.clientY - rect.top;
+            const centerX = rect.width / 2; const centerY = rect.height / 2;
+            const rotateX = ((y - centerY) / centerY) * -12; const rotateY = ((x - centerX) / centerX) * 12;
+            const lightX = ((centerX - x) / centerX) * 3; const lightY = ((centerY - y) / centerY) * 3;
+            el.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.03, 1.03, 1.03)`;
+            el.style.setProperty('--bevel-x', `${lightX}px`); el.style.setProperty('--bevel-y', `${lightY}px`);
+        }
+
+        function handleTouchParallax(e, el) {
+            const touch = e.touches[0]; const rect = el.getBoundingClientRect();
+            const x = touch.clientX - rect.left; const y = touch.clientY - rect.top;
+            const centerX = rect.width / 2; const centerY = rect.height / 2;
+            const rotateX = ((y - centerY) / centerY) * -15; const rotateY = ((x - centerX) / centerX) * 15;
+            const lightX = ((centerX - x) / centerX) * 4; const lightY = ((centerY - y) / centerY) * 4;
+            el.style.transform = `perspective(800px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+            el.style.setProperty('--bevel-x', `${lightX}px`); el.style.setProperty('--bevel-y', `${lightY}px`);
+        }
+
+        function resetParallax(el) {
+            el.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';
+            el.style.setProperty('--bevel-x', `0px`); el.style.setProperty('--bevel-y', `1px`);
+        }
+
+        function initiateGoldenReveal(name, targetTable, isTentative) {
+            triggerHaptic();
+            const wipe = document.getElementById('golden-wipe');
+            wipe.style.top = 'auto'; wipe.style.bottom = '0'; wipe.style.height = '100vh';
+            
+            setTimeout(() => {
+                document.getElementById('search-interface').style.display = 'none';
+                document.getElementById('takeover-view').style.display = 'block';
+                document.getElementById('takeover-guest-name').innerText = name;
+                document.getElementById('takeover-badge-container').style.display = isTentative ? 'block' : 'none';
+                document.getElementById('tablemates-list').style.display = 'none';
+                
+                currentActiveGuest = name; currentActiveTable = targetTable;
+                wipe.style.bottom = 'auto'; wipe.style.top = '0'; wipe.style.height = '0';
+                
+                startCelebrationAnimation();
+                
+                const odometer = document.getElementById('takeover-table-number');
+                let current = 1; const intervalTime = Math.max(Math.floor(400 / targetTable), 15);
+                const counter = setInterval(() => {
+                    current++;
+                    if (current >= targetTable) { odometer.innerText = targetTable; clearInterval(counter); }
+                    else { odometer.innerText = current; }
+                }, intervalTime);
+            }, 500);
+        }
+
+        function toggleTablemates() {
+            triggerHaptic();
+            const listDiv = document.getElementById('tablemates-list');
+            if (listDiv.style.display === 'flex') { listDiv.style.display = 'none'; return; }
+            
+            const mates = guests.filter(g => g.Table === currentActiveTable);
+            const filteredMates = mates.filter(m => formatGuestName(m.Name).cleanName !== currentActiveGuest);
+            
+            if (filteredMates.length === 0) {
+                listDiv.innerHTML = "<em style='color:var(--subtext-color);'>You have this table all to yourself!</em>";
+            } else {
+                let chipsHtml = "";
+                filteredMates.forEach(m => {
+                    const data = formatGuestName(m.Name);
+                    chipsHtml += `
+                        <div class="chip">
+                            <div class="chip-avatar">${data.initials}</div>
+                            <span>${data.cleanName}</span>
+                        </div>
+                    `;
+                });
+                listDiv.innerHTML = chipsHtml;
+            }
+            listDiv.style.display = 'flex';
+        }
+
+        function shareTable() {
+            triggerHaptic();
+            const shareText = `I'm at Table ${currentActiveTable} for Yousuf & Nafeesa's Walima! Find your seat here:`;
+            const shareUrl = window.location.href;
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Walima Seating',
+                    text: shareText,
+                    url: shareUrl
+                }).catch(console.error);
+            } else {
+                navigator.clipboard.writeText(shareText + " " + shareUrl);
+                alert("Table info copied to clipboard!");
+            }
+        }
+
+        function resetSearch() {
+            triggerHaptic();
+            document.getElementById('searchInput').value = '';
+            document.getElementById('results').innerHTML = '';
+            document.getElementById('takeover-view').style.display = 'none';
+            document.getElementById('search-interface').style.display = 'block';
+            window.scrollTo(0, 0);
+        }
+
+        // ⏳ STRICT EDT COUNTDOWN TIMER
+        function initCountdown() {
+            const targetDate = new Date('2026-06-27T18:00:00-04:00').getTime();
+            
+            setInterval(() => {
+                const now = new Date().getTime();
+                const distance = targetDate - now;
+                
+                if(distance < 0) {
+                    document.getElementById('cd-days').innerText = "00";
+                    document.getElementById('cd-hours').innerText = "00";
+                    document.getElementById('cd-mins').innerText = "00";
+                    return;
+                }
+                
+                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                
+                document.getElementById('cd-days').innerText = days.toString().padStart(2, '0');
+                document.getElementById('cd-hours').innerText = hours.toString().padStart(2, '0');
+                document.getElementById('cd-mins').innerText = minutes.toString().padStart(2, '0');
+            }, 1000);
+        }
+
+        const canvasEvent = document.getElementById('celebration-canvas');
+        const ctxEvent = canvasEvent.getContext('2d');
+        let particles = []; let animationFrameId;
+
+        function resizeCanvas() { canvasEvent.width = window.innerWidth; canvasEvent.height = window.innerHeight; }
+        window.addEventListener('resize', resizeCanvas); resizeCanvas();
+
+        function startCelebrationAnimation() {
+            particles = [];
+            const centerX = canvasEvent.width / 2; const centerY = canvasEvent.height / 2;
+            for (let i = 0; i < 75; i++) {
+                particles.push({
+                    x: centerX, y: centerY, angle: Math.random() * Math.PI * 2,
+                    speed: 3 + Math.random() * 8, radius: 4 + Math.random() * 6,
+                    color: Math.random() > 0.5 ? '#9E1B22' : '#D4AF37',
+                    opacity: 1, rotation: Math.random() * Math.PI,
+                    rotationSpeed: (Math.random() - 0.5) * 0.1, gravity: 0.15
+                });
+            }
+            cancelAnimationFrame(animationFrameId); runAnimationLoop();
+        }
+
+        function runAnimationLoop() {
+            ctxEvent.clearRect(0, 0, canvasEvent.width, canvasEvent.height);
+            let alive = false;
+            particles.forEach(p => {
+                if (p.opacity > 0) {
+                    alive = true;
+                    p.x += Math.cos(p.angle) * p.speed; p.y += Math.sin(p.angle) * p.speed + p.gravity;
+                    p.opacity -= 0.015; p.rotation += p.rotationSpeed;
+                    ctxEvent.save(); ctxEvent.translate(p.x, p.y); ctxEvent.rotate(p.rotation);
+                    ctxEvent.globalAlpha = p.opacity; ctxEvent.fillStyle = p.color;
+                    ctxEvent.beginPath(); ctxEvent.ellipse(0, 0, p.radius, p.radius * 0.6, 0, 0, Math.PI * 2);
+                    ctxEvent.fill(); ctxEvent.restore();
+                }
+            });
+            if (alive) animationFrameId = requestAnimationFrame(runAnimationLoop);
+            else ctxEvent.clearRect(0, 0, canvasEvent.width, canvasEvent.height);
+        }
+
         const themeToggle = document.getElementById('darkModeToggle');
+        const bannerImg = document.getElementById('dynamic-banner');
+        
+        function updateBannerImage() {
+            if (document.body.classList.contains('dark-mode')) {
+                bannerImg.src = 'banner-dark.jpg';
+            } else {
+                bannerImg.src = 'banner.jpg';
+            }
+        }
+
+        const themeIcon = document.getElementById('theme-icon');
+        const moonSvg = '<path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-3.03 0-5.5-2.47-5.5-5.5 0-1.82.89-3.42 2.26-4.4C12.92 3.04 12.46 3 12 3z"/>';
+        const sunSvg = '<path d="M6.76 4.84l-1.8-1.79-1.41 1.41 1.79 1.79 1.42-1.41zM4 10.5H1v2h3v-2zm9-9.95h-2V3.5h2V.55zm7.45 3.91l-1.41-1.41-1.79 1.79 1.41 1.41 1.79-1.79zm-3.21 13.7l1.79 1.8 1.41-1.41-1.8-1.79-1.4 1.4zM20 10.5v2h3v-2h-3zm-8-5c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm-1 16.95h2V19.5h-2v2.95zm-7.45-3.91l1.41 1.41 1.79-1.8-1.41-1.41-1.79 1.8z"/>';
+
         themeToggle.addEventListener('click', () => {
             triggerHaptic(); 
             document.body.classList.toggle('dark-mode');
-            
-            if (document.body.classList.contains('dark-mode')) {
-                themeToggle.innerHTML = '☀️';
-            } else {
-                themeToggle.innerHTML = '🌙';
-            }
+            themeIcon.innerHTML = document.body.classList.contains('dark-mode') ? sunSvg : moonSvg;
+            updateBannerImage();
         });
 
-        // Register Service Worker for Offline Mode
         if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js').then(registration => {
-                    console.log('Offline mode activated.');
-                }).catch(error => {
-                    console.log('Offline mode setup failed:', error);
-                });
-            });
+            window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').catch(() => {}); });
         }
     </script>
 </body>
